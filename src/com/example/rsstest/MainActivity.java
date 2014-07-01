@@ -10,13 +10,13 @@ import java.util.List;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
-.......
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.webkit.WebSettings;
@@ -30,6 +30,7 @@ public class MainActivity extends ListActivity {
 	List links;
 
 	private WebView m_WV;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -63,7 +64,7 @@ public class MainActivity extends ListActivity {
 	private class rss extends Thread {
 		public void run() {
 			try {
-				URL url = new URL("http://udn.com/udnrss/baseball.xml");
+				URL url = new URL("http://www.appledaily.com.tw/rss/newcreate/kind/sec/type/5");
 
 				XmlPullParserFactory factory = XmlPullParserFactory
 						.newInstance();
@@ -96,10 +97,15 @@ public class MainActivity extends ListActivity {
 							insideItem = true;
 						} else if (xpp.getName().equalsIgnoreCase("title")) {
 							if (insideItem)
+								if (xpp.getEventType() != XmlPullParser.END_TAG) {
+							        
+							    
+//								Log.i("TITLE", xpp.nextText());
 								headlines.add(xpp.nextText()); // extract the
 																// headline
-						} else if (xpp.getName().equalsIgnoreCase("link")) {
+						}} else if (xpp.getName().equalsIgnoreCase("link")) {
 							if (insideItem)
+//								Log.i("LINK", xpp.nextText());
 								links.add(xpp.nextText()); // extract the link
 															// of
 															// article
@@ -136,21 +142,20 @@ public class MainActivity extends ListActivity {
 		Uri uri = Uri.parse(links.get(position).toString());
 
 		m_WV.loadUrl(uri.toString());
-	    m_WV.setWebViewClient(new WebViewClientImpl());
+		m_WV.setWebViewClient(new WebViewClientImpl());
 
 		// Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 		// startActivity(intent);
 	}
-	
-	private final class WebViewClientImpl extends WebViewClient
-	  {
-		public void WebViewClientImpl()
-	    {
-	    }
+
+	private final class WebViewClientImpl extends WebViewClient {
+		public void WebViewClientImpl() {
+		}
 
 		@Override
-	    public boolean shouldOverrideUrlLoading(WebView view, String url)
-	    {return false;}
-	  }
+		public boolean shouldOverrideUrlLoading(WebView view, String url) {
+			return false;
+		}
+	}
 
 }
